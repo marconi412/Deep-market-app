@@ -13,6 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import api from '../services/api';
+import useUserLocation from '../hooks/useUserLocation'; // ADICIONE ESSE IMPORT
 
 const palette = {
   petrol: '#194568',
@@ -33,6 +34,9 @@ export default function HomeScreen({ navigation }) {
   const scales = useRef([]).current;
   const headerAnim = useRef(new Animated.Value(0)).current;
   const colorGlow = useRef(new Animated.Value(0)).current;
+
+  // NOVO: Localização do usuário
+  const { location, errorMsg } = useUserLocation();
 
   useEffect(() => {
     loadCryptos();
@@ -176,7 +180,7 @@ export default function HomeScreen({ navigation }) {
         barStyle={darkMode ? 'light-content' : 'dark-content'}
         backgroundColor={theme.bg}
       />
-      {}
+
       <Animated.View
         style={[
           styles.headerFixed,
@@ -226,6 +230,23 @@ export default function HomeScreen({ navigation }) {
           </Animated.View>
         </TouchableWithoutFeedback>
       </Animated.View>
+
+      {/* NOVO: localização do usuário no topo da tela */}
+      <View style={{ alignItems: 'center', marginTop: 4, marginBottom: 8 }}>
+        {location ? (
+          <Text style={{ color: theme.subtitle, fontWeight: '600', fontSize: 15 }}>
+            📍 Sua localização: {location.latitude.toFixed(4)}, {location.longitude.toFixed(4)}
+          </Text>
+        ) : errorMsg ? (
+          <Text style={{ color: theme.percent, fontWeight: '600', fontSize: 15 }}>
+            {errorMsg}
+          </Text>
+        ) : (
+          <Text style={{ color: theme.subtitle, fontWeight: '500', fontSize: 15 }}>
+            Obtendo localização...
+          </Text>
+        )}
+      </View>
 
       {loading ? (
         <View style={styles.center}>
